@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>駅名標メーカー</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app">
+      <section class="workspace" aria-label="駅名標プレビュー">
+        <div class="sign-shell">
+          <canvas id="previewCanvas" class="station-sign-canvas" width="801" height="258" aria-label="駅名標プレビュー"></canvas>
+        </div>
+      </section>
+
+      <aside class="panel" aria-label="入力フォーム">
+        <div class="panel-header">
+          <h1>駅名標メーカー</h1>
+          <button id="downloadButton" class="primary-button" type="button" aria-label="PNGを出力">
+            <span aria-hidden="true">↓</span>
+            PNG
+          </button>
+        </div>
+
+        <form class="controls">
+          <fieldset>
+            <legend>カラー</legend>
+            <label>
+              <span>路線カラー</span>
+              <input id="routeColor" type="color" value="#f86b00">
+            </label>
+            <label>
+              <span>ナンバリングカラー</span>
+              <input id="numberColor" type="color" value="#f00046">
+            </label>
+          </fieldset>
+
+          <fieldset>
+            <legend>ナンバリング</legend>
+            <label>
+              <span>形状</span>
+              <select id="numberShape">
+                <option value="square" selected>角丸四角</option>
+                <option value="circle">円</option>
+              </select>
+            </label>
+            <label>
+              <span>路線記号</span>
+              <input id="lineCode" type="text" value="B" maxlength="3">
+            </label>
+            <label>
+              <span>駅番号</span>
+              <input id="stationNumber" type="text" value="01" maxlength="4">
+            </label>
+          </fieldset>
+
+          <fieldset>
+            <legend>駅名</legend>
+            <label>
+              <span>日本語</span>
+              <input id="stationJa" type="text" value="さつたば">
+            </label>
+            <label>
+              <span>ひらがな</span>
+              <input id="stationKana" type="text" value="さつたば">
+            </label>
+            <label>
+              <span>英語</span>
+              <input id="stationEn" type="text" value="Satutaba">
+            </label>
+          </fieldset>
+
+          <fieldset>
+            <legend>下部表示</legend>
+            <label>
+              <span>左 日本語</span>
+              <input id="leftJa" type="text" value="進急入野">
+            </label>
+            <label>
+              <span>左 英語</span>
+              <input id="leftEn" type="text" value="Shinkyu-Hairino">
+            </label>
+            <label>
+              <span>右 日本語</span>
+              <input id="rightJa" type="text" value="5荾角">
+            </label>
+            <label>
+              <span>右 英語</span>
+              <input id="rightEn" type="text" value="Goryokaku">
+            </label>
+          </fieldset>
+        </form>
+      </aside>
+    </main>
+    <script src="script.js"></script>
+  </body>
+</html>
