@@ -1,4 +1,5 @@
 :root {
+  /* アプリ全体で使う色とフォントの共通変数です。 */
   color-scheme: light;
   --bg: #eef1f4;
   --panel: #ffffff;
@@ -12,10 +13,12 @@
 }
 
 * {
+  /* padding と border を含めてサイズ計算し、レイアウト崩れを防ぎます。 */
   box-sizing: border-box;
 }
 
 body {
+  /* 画面全体に背景色と基本フォントを適用します。 */
   margin: 0;
   min-height: 100vh;
   background: var(--bg);
@@ -24,6 +27,7 @@ body {
 }
 
 .app {
+  /* 左にプレビュー、右に操作パネルを並べる基本レイアウトです。 */
   display: grid;
   grid-template-columns: minmax(0, 1fr) 360px;
   gap: 24px;
@@ -32,18 +36,21 @@ body {
 }
 
 .workspace {
+  /* プレビューを作業領域の中央に配置します。 */
   display: grid;
   place-items: center;
   min-width: 0;
 }
 
 .sign-shell {
+  /* 小さい画面でも駅名標全体を横スクロールで確認できる枠です。 */
   width: min(100%, 962px);
   overflow-x: auto;
   padding: 18px;
 }
 
 .station-sign {
+  /* HTML要素版の駅名標を表示するための固定サイズ定義です。 */
   width: 801px;
   height: 258px;
   background: #ffffff;
@@ -52,6 +59,7 @@ body {
 }
 
 .station-sign-canvas {
+  /* 現在のプレビュー表示に使うCanvasの見た目を整えます。 */
   display: block;
   width: 801px;
   height: 258px;
@@ -60,6 +68,7 @@ body {
 }
 
 .main-panel {
+  /* 駅名標上部のナンバリングと駅名を配置する領域です。 */
   height: 196px;
   position: relative;
   align-items: start;
@@ -67,6 +76,7 @@ body {
 }
 
 .number-mark {
+  /* 路線記号と駅番号を収めるナンバリング枠です。 */
   position: absolute;
   left: 100px;
   top: 40px;
@@ -79,10 +89,12 @@ body {
 }
 
 .station-sign.shape-circle .number-mark {
+  /* 円形ナンバリングが選ばれた場合だけ枠を丸くします。 */
   border-radius: 50%;
 }
 
 .number-line {
+  /* ナンバリング上段の路線記号表示です。 */
   height: 40px;
   background: var(--number);
   color: #ffffff;
@@ -94,6 +106,7 @@ body {
 }
 
 .number-station {
+  /* ナンバリング下段の駅番号表示です。 */
   height: 45px;
   display: grid;
   place-items: center;
@@ -105,6 +118,7 @@ body {
 }
 
 .name-block {
+  /* 中央の駅名3段表示をまとめる配置ブロックです。 */
   position: absolute;
   left: 0;
   right: 0;
@@ -194,6 +208,7 @@ body {
 }
 
 .next-en {
+  /* 隣駅の英語名は日本語名の下に小さく表示します。 */
   margin-top: 3px;
   font-size: 20px;
   line-height: 1;
@@ -202,6 +217,7 @@ body {
 }
 
 .panel {
+  /* 右側の入力パネルを白背景で独立させます。 */
   background: var(--panel);
   border-left: 1px solid var(--border);
   padding: 22px;
@@ -209,6 +225,7 @@ body {
 }
 
 .panel-header {
+  /* タイトルとPNG出力ボタンを横並びに配置します。 */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -217,12 +234,14 @@ body {
 }
 
 h1 {
+  /* 操作パネル内で収まる見出しサイズにします。 */
   margin: 0;
   font-size: 22px;
   line-height: 1.2;
 }
 
 .primary-button {
+  /* PNG出力用の主要ボタンを目立つ配色にします。 */
   appearance: none;
   border: 0;
   border-radius: 6px;
@@ -239,15 +258,18 @@ h1 {
 }
 
 .primary-button:hover {
+  /* ホバー時は少し明るくして操作可能な状態を示します。 */
   background: #2b2b2b;
 }
 
 .controls {
+  /* 入力グループ同士の余白を一定に保ちます。 */
   display: grid;
   gap: 18px;
 }
 
 fieldset {
+  /* 各設定カテゴリを縦方向の入力グループとしてまとめます。 */
   margin: 0;
   padding: 0;
   border: 0;
@@ -256,6 +278,7 @@ fieldset {
 }
 
 legend {
+  /* fieldset の見出しを控えめな補助色で表示します。 */
   margin-bottom: 10px;
   color: var(--muted);
   font-size: 13px;
@@ -263,6 +286,7 @@ legend {
 }
 
 label {
+  /* ラベル名と入力欄を2列でそろえます。 */
   display: grid;
   grid-template-columns: 108px minmax(0, 1fr);
   align-items: center;
@@ -273,6 +297,7 @@ label {
 }
 
 input {
+  /* テキスト入力欄の基本サイズと枠線を統一します。 */
   width: 100%;
   min-height: 38px;
   border: 1px solid var(--border);
@@ -283,6 +308,7 @@ input {
 }
 
 select {
+  /* セレクトボックスも入力欄と同じサイズ感にします。 */
   width: 100%;
   min-height: 38px;
   border: 1px solid var(--border);
@@ -293,11 +319,13 @@ select {
 }
 
 input[type="color"] {
+  /* カラーピッカーを他の入力欄と同じ高さにします。 */
   padding: 3px;
   cursor: pointer;
 }
 
 .color-control {
+  /* カラーピッカーとカラーコード入力を横並びにします。 */
   display: grid;
   grid-template-columns: 44px minmax(0, 1fr);
   gap: 8px;
@@ -305,6 +333,7 @@ input[type="color"] {
 }
 
 .color-code-input {
+  /* カラーコードを読みやすい等幅フォントで表示します。 */
   font-family: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   text-transform: lowercase;
 }
@@ -312,12 +341,14 @@ input[type="color"] {
 input:focus-visible,
 select:focus-visible,
 button:focus-visible {
+  /* キーボード操作時のフォーカス位置をアクセント色で示します。 */
   outline: 3px solid color-mix(in srgb, var(--focus) 28%, transparent);
   outline-offset: 2px;
   border-color: var(--focus);
 }
 
 @media (max-width: 900px) {
+  /* タブレット幅ではプレビューと入力パネルを縦に積みます。 */
   .app {
     grid-template-columns: 1fr;
     padding: 14px;
@@ -331,6 +362,7 @@ button:focus-visible {
 }
 
 @media (max-width: 460px) {
+  /* 狭い画面ではラベルと入力欄を縦並びにして読ませます。 */
   label {
     grid-template-columns: 1fr;
     gap: 6px;

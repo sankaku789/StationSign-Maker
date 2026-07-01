@@ -1,6 +1,8 @@
+// 駅名標キャンバスの固定サイズを定義します。
 const SIGN_WIDTH = 801;
 const SIGN_HEIGHT = 258;
 
+// フォームとプレビューで共有する初期表示データです。
 const state = {
   routeColor: "#f86b00",
   numberColor: "#f00046",
@@ -16,6 +18,7 @@ const state = {
   rightEn: "Goryokaku",
 };
 
+// state と同じキーを使って、各入力欄のDOMをまとめて取得します。
 const fields = Object.fromEntries(
   Object.keys(state).map((key) => [key, document.getElementById(key)]),
 );
@@ -24,13 +27,16 @@ const colorCodeFields = {
   numberColor: document.getElementById("numberColorCode"),
 };
 
+// プレビュー描画とPNG出力に使う主要なDOMを取得します。
 const previewCanvas = document.getElementById("previewCanvas");
 const downloadButton = document.getElementById("downloadButton");
 
 function normalizeColorCode(value) {
+  // 先頭の # を任意にして、入力された16進カラーだけを取り出します。
   const trimmedValue = value.trim();
   const hexValue = trimmedValue.startsWith("#") ? trimmedValue.slice(1) : trimmedValue;
 
+  // 3桁カラーはCanvasで扱いやすい6桁カラーへ展開します。
   if (/^[0-9a-fA-F]{3}$/.test(hexValue)) {
     return `#${hexValue
       .split("")
@@ -39,6 +45,7 @@ function normalizeColorCode(value) {
       .toLowerCase()}`;
   }
 
+  // 6桁カラーは小文字にそろえて返します。
   if (/^[0-9a-fA-F]{6}$/.test(hexValue)) {
     return `#${hexValue.toLowerCase()}`;
   }
@@ -47,26 +54,32 @@ function normalizeColorCode(value) {
 }
 
 function syncState() {
+  // 通常の入力欄から現在値を読み取り、stateへ反映します。
   for (const [key, input] of Object.entries(fields)) {
     state[key] = input.value;
   }
 
+  // カラーピッカーの値をテキスト入力欄にも同期します。
   for (const [key, input] of Object.entries(colorCodeFields)) {
     input.value = fields[key].value;
   }
 
+  // 入力値の変更後、Canvasプレビューを描き直します。
   drawSign(previewCanvas);
 }
 
 function syncColorCode(key) {
+  // テキスト欄のカラーコードを検証し、正規化した値を取得します。
   const input = colorCodeFields[key];
   const normalizedColor = normalizeColorCode(input.value);
 
+  // 不正なカラーコードはブラウザ標準の入力エラーとして表示します。
   if (!normalizedColor) {
     input.setCustomValidity("カラーコードは #RGB または #RRGGBB で入力してください");
     return;
   }
 
+  // 正しいカラーコードをカラーピッカーとテキスト欄の両方に反映します。
   input.setCustomValidity("");
   fields[key].value = normalizedColor;
   input.value = normalizedColor;
@@ -74,10 +87,12 @@ function syncColorCode(key) {
 }
 
 function setCanvasFont(ctx, size, weight = 700) {
+  // Canvas上の文字をアプリ全体と同じ日本語フォントにそろえます。
   ctx.font = `${weight} ${size}px "Noto Sans JP", sans-serif`;
 }
 
 function fitCanvasText(ctx, text, maxWidth, maxSize, minSize, weight) {
+  // 指定幅に収まるまで、最大サイズから1pxずつ小さくします。
   let size = maxSize;
   do {
     setCanvasFont(ctx, size, weight);
@@ -90,6 +105,7 @@ function fitCanvasText(ctx, text, maxWidth, maxSize, minSize, weight) {
 }
 
 function drawText(ctx, text, x, y, options) {
+  // 文字描画の共通オプションを展開し、既定値を補います。
   const {
     size,
     weight = 700,
@@ -99,10 +115,12 @@ function drawText(ctx, text, x, y, options) {
     maxWidth = null,
   } = options;
 
+  // Canvasの文字配置と色を設定してから描画します。
   setCanvasFont(ctx, size, weight);
   ctx.textAlign = align;
   ctx.textBaseline = baseline;
   ctx.fillStyle = color;
+  // 最大幅が指定されている場合はCanvas側の幅制限も使います。
   if (maxWidth) {
     ctx.fillText(text, x, y, maxWidth);
     return;
@@ -112,6 +130,7 @@ function drawText(ctx, text, x, y, options) {
 }
 
 function roundedRect(ctx, x, y, width, height, radius) {
+  // 角丸四角のパスを作成し、塗りや線は呼び出し側で指定します。
   ctx.beginPath();
   ctx.moveTo(x + radius, y);
   ctx.arcTo(x + width, y, x + width, y + height, radius);
@@ -122,6 +141,7 @@ function roundedRect(ctx, x, y, width, height, radius) {
 }
 
 function numberMarkPath(ctx) {
+  // 選択された形状に応じて、駅ナンバリング枠のパスを作ります。
   if (state.numberShape === "circle") {
     ctx.beginPath();
     ctx.arc(147.5, 87.5, 47.5, 0, Math.PI * 2);
@@ -133,6 +153,7 @@ function numberMarkPath(ctx) {
 }
 
 function drawNumberMark(ctx) {
+  // ナンバリング枠の白背景と色付きの外枠を描画します。
   numberMarkPath(ctx);
   ctx.fillStyle = "#ffffff";
   ctx.fill();
@@ -140,6 +161,7 @@ function drawNumberMark(ctx) {
   ctx.strokeStyle = state.numberColor;
   ctx.stroke();
 
+  // 枠内だけに路線記号の帯を塗れるよう、パスでクリップします。
   ctx.save();
   numberMarkPath(ctx);
   ctx.clip();
@@ -235,37 +257,47 @@ function drawNextStations(ctx) {
 }
 
 function drawSign(canvas) {
+  // 対象Canvasの描画コンテキストを取得します。
   const ctx = canvas.getContext("2d");
+
+  // 前回の描画を消し、駅名標全体の白い下地を塗ります。
   ctx.clearRect(0, 0, SIGN_WIDTH, SIGN_HEIGHT);
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, SIGN_WIDTH, SIGN_HEIGHT);
 
+  // ナンバリング、駅名、隣駅表示を順番に重ねます。
   drawNumberMark(ctx);
   drawUpperStationName(ctx);
   drawNextStations(ctx);
 }
 
 function downloadPng() {
+  // 出力直前にフォーム値を反映し、最新状態のプレビューにします。
   syncState();
 
+  // 一時的なリンクを作り、CanvasのPNGデータをダウンロードします。
   const link = document.createElement("a");
   link.download = `${state.stationEn || state.stationJa || "station-sign"}.png`;
   link.href = previewCanvas.toDataURL("image/png");
   link.click();
 }
 
+// 通常入力は変更のたびにstateとCanvasへ反映します。
 for (const input of Object.values(fields)) {
   input.addEventListener("input", syncState);
 }
 
+// カラーコード入力は検証しながら、対応するカラーピッカーへ同期します。
 for (const [key, input] of Object.entries(colorCodeFields)) {
   input.addEventListener("input", () => syncColorCode(key));
   input.addEventListener("blur", () => {
+    // フォーカスが外れたら有効なカラー値へ戻し、エラー表示を解除します。
     input.value = fields[key].value;
     input.setCustomValidity("");
   });
 }
 
+// ボタン操作とフォント読み込み完了時の初期描画を設定します。
 downloadButton.addEventListener("click", downloadPng);
 
 document.fonts?.ready.then(syncState);
