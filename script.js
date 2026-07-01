@@ -19,16 +19,58 @@ const state = {
 const fields = Object.fromEntries(
   Object.keys(state).map((key) => [key, document.getElementById(key)]),
 );
+const colorCodeFields = {
+  routeColor: document.getElementById("routeColorCode"),
+  numberColor: document.getElementById("numberColorCode"),
+};
 
 const previewCanvas = document.getElementById("previewCanvas");
 const downloadButton = document.getElementById("downloadButton");
+
+function normalizeColorCode(value) {
+  const trimmedValue = value.trim();
+  const hexValue = trimmedValue.startsWith("#") ? trimmedValue.slice(1) : trimmedValue;
+
+  if (/^[0-9a-fA-F]{3}$/.test(hexValue)) {
+    return `#${hexValue
+      .split("")
+      .map((character) => character + character)
+      .join("")
+      .toLowerCase()}`;
+  }
+
+  if (/^[0-9a-fA-F]{6}$/.test(hexValue)) {
+    return `#${hexValue.toLowerCase()}`;
+  }
+
+  return null;
+}
 
 function syncState() {
   for (const [key, input] of Object.entries(fields)) {
     state[key] = input.value;
   }
 
+  for (const [key, input] of Object.entries(colorCodeFields)) {
+    input.value = fields[key].value;
+  }
+
   drawSign(previewCanvas);
+}
+
+function syncColorCode(key) {
+  const input = colorCodeFields[key];
+  const normalizedColor = normalizeColorCode(input.value);
+
+  if (!normalizedColor) {
+    input.setCustomValidity("カラーコードは #RGB または #RRGGBB で入力してください");
+    return;
+  }
+
+  input.setCustomValidity("");
+  fields[key].value = normalizedColor;
+  input.value = normalizedColor;
+  syncState();
 }
 
 function setCanvasFont(ctx, size, weight = 700) {
@@ -54,12 +96,18 @@ function drawText(ctx, text, x, y, options) {
     align = "left",
     baseline = "alphabetic",
     color = "#000000",
+    maxWidth = null,
   } = options;
 
   setCanvasFont(ctx, size, weight);
   ctx.textAlign = align;
   ctx.textBaseline = baseline;
   ctx.fillStyle = color;
+  if (maxWidth) {
+    ctx.fillText(text, x, y, maxWidth);
+    return;
+  }
+
   ctx.fillText(text, x, y);
 }
 
@@ -145,38 +193,44 @@ function drawNextStations(ctx) {
 
   const leftCenterX = 123;
   const rightCenterX = 689;
-  const nextMaxWidth = 300;
+  const sidePadding = 16;
+  const leftMaxWidth = (leftCenterX - sidePadding) * 2;
+  const rightMaxWidth = (SIGN_WIDTH - rightCenterX - sidePadding) * 2;
   const nextJaBottomY = 237;
   const nextEnTopY = 235;
 
   drawText(ctx, state.leftJa, leftCenterX, nextJaBottomY, {
-    size: fitCanvasText(ctx, state.leftJa, nextMaxWidth, 37, 18, 900),
+    size: fitCanvasText(ctx, state.leftJa, leftMaxWidth, 37, 18, 900),
     weight: 900,
     align: "center",
     baseline: "bottom",
     color: "#ffffff",
+    maxWidth: leftMaxWidth,
   });
   drawText(ctx, state.leftEn, leftCenterX, nextEnTopY, {
-    size: fitCanvasText(ctx, state.leftEn, nextMaxWidth, 20, 12, 700),
+    size: fitCanvasText(ctx, state.leftEn, leftMaxWidth, 20, 12, 700),
     weight: 700,
     align: "center",
     baseline: "top",
     color: "#ffffff",
+    maxWidth: leftMaxWidth,
   });
 
   drawText(ctx, state.rightJa, rightCenterX, nextJaBottomY, {
-    size: fitCanvasText(ctx, state.rightJa, nextMaxWidth, 37, 18, 900),
+    size: fitCanvasText(ctx, state.rightJa, rightMaxWidth, 37, 18, 900),
     weight: 900,
     align: "center",
     baseline: "bottom",
     color: "#ffffff",
+    maxWidth: rightMaxWidth,
   });
   drawText(ctx, state.rightEn, rightCenterX, nextEnTopY, {
-    size: fitCanvasText(ctx, state.rightEn, nextMaxWidth, 20, 12, 700),
+    size: fitCanvasText(ctx, state.rightEn, rightMaxWidth, 20, 12, 700),
     weight: 700,
     align: "center",
     baseline: "top",
     color: "#ffffff",
+    maxWidth: rightMaxWidth,
   });
 }
 
@@ -202,6 +256,14 @@ function downloadPng() {
 
 for (const input of Object.values(fields)) {
   input.addEventListener("input", syncState);
+}
+
+for (const [key, input] of Object.entries(colorCodeFields)) {
+  input.addEventListener("input", () => syncColorCode(key));
+  input.addEventListener("blur", () => {
+    input.value = fields[key].value;
+    input.setCustomValidity("");
+  });
 }
 
 downloadButton.addEventListener("click", downloadPng);

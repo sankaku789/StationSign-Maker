@@ -31,11 +31,17 @@
             <legend>カラー</legend>
             <label>
               <span>路線カラー</span>
-              <input id="routeColor" type="color" value="#f86b00">
+              <span class="color-control">
+                <input id="routeColor" type="color" value="#f86b00" aria-label="路線カラーを選択">
+                <input id="routeColorCode" class="color-code-input" type="text" value="#f86b00" maxlength="7" inputmode="text" spellcheck="false" aria-label="路線カラーコード">
+              </span>
             </label>
             <label>
               <span>ナンバリングカラー</span>
-              <input id="numberColor" type="color" value="#f00046">
+              <span class="color-control">
+                <input id="numberColor" type="color" value="#f00046" aria-label="ナンバリングカラーを選択">
+                <input id="numberColorCode" class="color-code-input" type="text" value="#f00046" maxlength="7" inputmode="text" spellcheck="false" aria-label="ナンバリングカラーコード">
+              </span>
             </label>
           </fieldset>
 

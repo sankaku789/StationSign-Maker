@@ -297,6 +297,18 @@ input[type="color"] {
   cursor: pointer;
 }
 
+.color-control {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+}
+
+.color-code-input {
+  font-family: ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  text-transform: lowercase;
+}
+
 input:focus-visible,
 select:focus-visible,
 button:focus-visible {
