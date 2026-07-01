@@ -18,7 +18,7 @@
 
 とすると、
 
-![alt text](example-1.png)
+![alt text](example.png)
 
 のようになります。
 
